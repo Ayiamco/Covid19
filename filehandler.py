@@ -32,7 +32,7 @@ def upload_file(file_name, bucket_name, object_name=None):
     
     # Upload the file
     try:
-        response = s3_client.download_file(bucket_name, object_name, file_name)
+        response = s3_client.upload_file(file_name, bucket_name, object_name)
     except ClientError as e:
         logging.error(e)
         return False
@@ -92,7 +92,3 @@ def get_todays_data(current_data,grouped_previous_data):
             current_data[field]=current_data[field]-grouped_previous_data.loc[slicer][field]
     return current_data
 
-import datetime
-date=str(datetime.datetime.today()).split(" ")[0]
-date=[date]*20
-print(date)
