@@ -9,7 +9,7 @@ from filehandler import upload_file
 from filehandler import add_geopolitical_zone
 from filehandler import download_file
 from filehandler import get_todays_data
-from flask import Flask,jsonify,request
+from flask import Flask,jsonify,request,render_template
 from apscheduler.schedulers.background import BackgroundScheduler
 import atexit
 import datetime
@@ -73,7 +73,9 @@ def start_cron():
     new_previous_data.to_csv("previous_data.csv",index=False)
     upload_file("previous_data.csv",s3_bucket_name)
 
-
+@app.route('/')
+def index():
+    return render_template("index.html")
 @app.route('/covid19',methods=['GET'])
 def getdata():
     if request.method=="GET":

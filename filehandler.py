@@ -61,19 +61,22 @@ def add_geopolitical_zone(state):
     """Add geopolitical zone based on the state"""
     south_south=["rivers","crossriver","cross-river","cross river",
     "akwaibom","akwa ibom","akwa-ibom","delta","edo","bayelsa"]
-    if state.lower() in ["gombe", "bauchi", "yobe", "borno", "adamawa", "taraba"]:
-        return "NorthEast"
-    elif state.lower() in ["jigawa", "kano", "katsina", "kaduna", "kebbi", "zamfara", "sokoto"]:
-        return "NorthWest"
-    elif state.lower() in south_south:
-        return "SouthSouth"
-    elif state.lower() in ["niger", "benue", "nassarawa", "plateau", "kogi","kwara"]:
-        return "NorthCentral"
-    elif state.lower() in ["imo","abia","anambara","ebonyi","enugu"]:
-        return "SouthEast"
-    elif state.lower() in ["oyo","osun","ogun","lagos","ekiti","ondo"]:
-        return "SouthWest"
-    else:
+    try:
+        if state.lower() in ["gombe", "bauchi", "yobe", "borno", "adamawa", "taraba"]:
+            return "NorthEast"
+        elif state.lower() in ["jigawa", "kano", "katsina", "kaduna", "kebbi", "zamfara", "sokoto"]:
+            return "NorthWest"
+        elif state.lower() in south_south:
+            return "SouthSouth"
+        elif state.lower() in ["niger", "benue", "nassarawa", "plateau", "kogi","kwara"]:
+            return "NorthCentral"
+        elif state.lower() in ["imo","abia","anambara","ebonyi","enugu"]:
+            return "SouthEast"
+        elif state.lower() in ["oyo","osun","ogun","lagos","ekiti","ondo"]:
+            return "SouthWest"
+        else:
+            return None
+    except:
         return None
 
 def get_todays_data(current_data,grouped_previous_data):
