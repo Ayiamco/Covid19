@@ -65,10 +65,10 @@ def add_geopolitical_zone(state):
         return "NorthEast"
     elif state.lower() in ["jigawa", "kano", "katsina", "kaduna", "kebbi", "zamfara", "sokoto"]:
         return "NorthWest"
-    elif state.lower() in ["niger", "benue", "nassarawa", "plateau", "kogi","kwara"]:
-        return "NorthCentral"
     elif state.lower() in south_south:
         return "SouthSouth"
+    elif state.lower() in ["niger", "benue", "nassarawa", "plateau", "kogi","kwara"]:
+        return "NorthCentral"
     elif state.lower() in ["imo","abia","anambara","ebonyi","enugu"]:
         return "SouthEast"
     elif state.lower() in ["oyo","osun","ogun","lagos","ekiti","ondo"]:
