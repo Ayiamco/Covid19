@@ -74,6 +74,8 @@ def add_geopolitical_zone(state):
             return "SouthEast"
         elif state.lower() in ["oyo","osun","ogun","lagos","ekiti","ondo"]:
             return "SouthWest"
+        elif state.lower() in ["Abuja FCT"]:
+            return "FCT"
         else:
             return None
     except:
@@ -86,12 +88,12 @@ def get_todays_data(current_data,grouped_previous_data):
     from the new incoming sumarized data.
     """
     for field in ["new_cases","active_cases","number_discharged","No_of_deaths"]:
-        if current_data[field]==grouped_previous_data.loc[current_data["states"]][field]:
+        if int(current_data[field])==int(grouped_previous_data.loc[current_data["states"]][field]):
             #previous data is same as current data
             pass
         else:
             #current data for particular field is greater than previous data
             slicer=current_data["states"]
-            current_data[field]=current_data[field]-grouped_previous_data.loc[slicer][field]
+            current_data[field]=int(current_data[field])-int(grouped_previous_data.loc[slicer][field])
     return current_data
 

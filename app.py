@@ -18,7 +18,7 @@ import json
 app=Flask(__name__)
 
 sched = BackgroundScheduler(daemon=True)
-sched.add_job(lambda : start_cron(),trigger='interval',hours=24)
+sched.add_job(lambda : start_cron(),trigger='interval',hours=0.01)
 sched.start()
 def start_cron():
     #scrap tables from the webpage
@@ -29,8 +29,29 @@ def start_cron():
     #rename column fields
     current_data.columns=["states","new_cases","active_cases","number_discharged","No_of_deaths"]
 
+    #drop unwanted rows
+    current_data=current_data[current_data.states!="Total"]
+    current_data=current_data[current_data.states.notnull()]
+
+    current_data_states=list(current_data.states)
+    all_states=['Abia', 'Abuja FCT', 'Adamawa', 'Akwa Ibom', 'Anambra', 'Bauchi', 'Bayelsa', 'Benue', 'Borno', 'Cross River', 'Delta', 'Ebonyi', 'Edo', 'Ekiti', 'Enugu', 'Gombe', 'Imo', 'Jigawa', 'Kaduna', 'Kano', 'Katsina', 'Kebbi', 'Kogi', 'Kwara', 'Lagos', 'Nasarawa', 'Niger', 'Ogun', 'Ondo', 'Osun', 'Oyo', 'Plateau', 'Rivers', 'Sokoto', 'Taraba', 'Yobe', 'Zamfara',"Total"]
+    my_dict={"states":[],"new_cases":[],"active_cases":[],"number_discharged":[],"No_of_deaths":[]}
+    for state in all_states:
+        if state not in current_data_states:
+            my_dict["states"].append(state)
+            my_dict["new_cases"].append(0)
+            my_dict["active_cases"].append(0)
+            my_dict["number_discharged"].append(0)
+            my_dict["No_of_deaths"].append(0)
+    if len(my_dict["states"])>0:
+        #corona virus cases have not being confirmed in all states
+        df=pd.DataFrame(my_dict)
+        current_data=pd.concat([df,current_data],ignore_index=True,axis=0)
+        current_data.index=list(range(0,37))
+
     #add geopolitical zones for each record
     current_data["geopolitical_zone"]=current_data.states.apply(lambda x: add_geopolitical_zone(x))
+    print(current_data)
 
     #get s3 bucket name
     #s3_bucket_name=os.getenv("s3_bucket")
@@ -44,38 +65,20 @@ def start_cron():
         by="states").sum()
 
     current_data=current_data.apply(lambda x:get_todays_data(x,grouped_previous_data),axis=1)
+    print("Got current data")
     date=str(datetime.datetime.today()).split(" ")[0]
     date=[date]*37
-    states=["Gombe", "Bauchi", "Yobe", "Borno", "Adamawa", "Taraba","Jigawa", "Kano", "Katsina", "Kaduna", "Kebbi", "Zamfara", "Sokoto","Niger", "Benue", "Nassarawa", "Plateau", "Kogi","Kwara","Imo","Abia","Anambara","Ebonyi","Enugu","Oyo","Osun","Ogun","Lagos","Ekiti","Rivers","Cross River","Ondo",
-    "Akwa Ibom","Delta","Edo","Bayelsa","Abuja FCT"]
-    new_cases,active_cases,number_discharged,No_of_deaths=[],[],[],[]
-    for state in states:
-        if state in list(current_data.states):
-            new_cases.append(current_data[current_data.states==state]["new_cases"])
-            active_cases.append(current_data[current_data.states==state]["active_cases"])
-            number_discharged.append(current_data[current_data.states==state]["number_discharged"])
-            No_of_deaths.append(current_data[current_data.states==state]["No_of_deaths"])
-        else:
-            new_cases.append(0)
-            number_discharged.append(0)
-            No_of_deaths.append(0)
-
-    #dataset
-    df=pd.DataFrame({
-        "states":states,
-        "new_cases":new_cases,
-        "number_discharged":number_discharged,
-        "No_of_deaths":No_of_deaths
-    })
-    df["geopolitical_zone"]=df.states.apply(lambda x: add_geopolitical_zone(x))
-    df["date"]=date
-    new_previous_data=pd.concat([previous_data,df],axis=0,ignore_index=True)
+    current_data["date"]=date
+    new_previous_data=pd.concat([previous_data,current_data],axis=0,ignore_index=True)
     new_previous_data.to_csv("previous_data.csv",index=False)
-    upload_file("previous_data.csv",s3_bucket_name)
+    #upload_file("previous_data.csv",s3_bucket_name)
+    print(new_previous_data)
+    print("Done.........................................................")
 
 @app.route('/')
 def index():
     return render_template("index.html")
+    
 @app.route('/covid19',methods=['GET'])
 def getdata():
     if request.method=="GET":
