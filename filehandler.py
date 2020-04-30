@@ -68,9 +68,9 @@ def add_geopolitical_zone(state):
             return "NorthWest"
         elif state.lower() in south_south:
             return "SouthSouth"
-        elif state.lower() in ["niger", "benue", "nassarawa", "plateau", "kogi","kwara"]:
+        elif state.lower() in ["niger", "benue", "nasarawa", "plateau", "kogi","kwara"]:
             return "NorthCentral"
-        elif state.lower() in ["imo","abia","anambara","ebonyi","enugu"]:
+        elif state.lower() in ["imo","abia","anambra","ebonyi","enugu"]:
             return "SouthEast"
         elif state.lower() in ["oyo","osun","ogun","lagos","ekiti","ondo"]:
             return "SouthWest"
@@ -87,11 +87,12 @@ def get_todays_data(current_data,grouped_previous_data):
     To get what happened today alone we need to subtract the previous data
     from the new incoming sumarized data.
     """
-    for field in ["new_cases","active_cases","number_discharged","No_of_deaths"]:
+    for field in ["new_cases","No. of Active Cases","number_discharged","No_of_deaths"]:
         if int(current_data[field])==int(grouped_previous_data.loc[current_data["states"]][field]):
             #previous data is same as current data
-            pass
+            current_data[field]=0
         else:
+            
             #current data for particular field is greater than previous data
             slicer=current_data["states"]
             current_data[field]=int(current_data[field])-int(grouped_previous_data.loc[slicer][field])
