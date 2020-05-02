@@ -87,7 +87,7 @@ def get_todays_data(current_data,grouped_previous_data):
     To get what happened today alone we need to subtract the previous data
     from the new incoming sumarized data.
     """
-    for field in ["new_cases","No. of Active Cases","number_discharged","No_of_deaths"]:
+    for field in ["new_cases","number_discharged","No_of_deaths"]:
         if int(current_data[field])==int(grouped_previous_data.loc[current_data["states"]][field]):
             #previous data is same as current data
             current_data[field]=0
