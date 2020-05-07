@@ -30,7 +30,7 @@ s3_client = boto3.client('s3',aws_access_key_id=access_key,aws_secret_access_key
 
 # Upload the file
 try:
-    response = s3_client.upload_file("previous_data.csv","joseph-covid19", "previous_data.csv")
+    response = download_file("previous_data.csv","joseph-covid19", "previous_data.csv")
 except ClientError as e:
     logging.error(e)
 print(response)

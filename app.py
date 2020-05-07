@@ -41,8 +41,8 @@ def start_cron():
                 s3_bucket_name=os.getenv("s3_bucket")
                 #keys=json.load(open("rootkey.json","r"))
                 #s3_bucket_name=keys["s3"]
-                #previous_data=download_file(s3_bucket_name,"previous_data.csv","previous_data.csv")
-                previous_data=pd.read_csv("previous_data.csv",header=0)
+                previous_data=download_file(s3_bucket_name,"previous_data.csv","previous_data.csv")
+                #previous_data=pd.read_csv("previous_data.csv",header=0)
                 previous_data.replace("Abuja FCT","FCT",inplace=True)
                 break
             except:
@@ -145,6 +145,7 @@ def start_cron():
     
 @app.route('/')
 def index():
+    print("loading...............")
     return render_template("index.html")
     
 @app.route('/covid19',methods=['GET'])
