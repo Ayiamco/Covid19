@@ -144,7 +144,7 @@ def start_cron():
         print("googogogogogogogogogogo")
     
 @app.route('/')
-def index():
+def home():
     print("loading...............")
     return render_template("index.html")
     
