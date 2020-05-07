@@ -23,7 +23,7 @@ import traceback
 app=Flask(__name__)
 
 sched = BackgroundScheduler(daemon=True)
-sched.add_job(lambda : start_cron(),trigger='interval',hours=0.01)
+sched.add_job(lambda : start_cron(),trigger='interval',hours=0.02)
 sched.start()
 def start_cron():
     #scrap tables from the webpage
@@ -38,9 +38,9 @@ def start_cron():
                 
                 #load previous data
                 #get s3 bucket name
-                #s3_bucket_name=os.getenv("s3_bucket")
-                keys=json.load(open("rootkey.json","r"))
-                s3_bucket_name=keys["s3"]
+                s3_bucket_name=os.getenv("s3_bucket")
+                #keys=json.load(open("rootkey.json","r"))
+                #s3_bucket_name=keys["s3"]
                 #previous_data=download_file(s3_bucket_name,"previous_data.csv","previous_data.csv")
                 previous_data=pd.read_csv("previous_data.csv",header=0)
                 previous_data.replace("Abuja FCT","FCT",inplace=True)
@@ -51,13 +51,13 @@ def start_cron():
                 if count<3:
                     time.sleep(5)
                 elif count>=3:
-                    # EMAIL=os.getenv("EMAIL")
-                    # PASSWORD=os.getenv("PASSWORD")
-                    # RECEIVER=os.getenv("RECEIVER")
+                    EMAIL=os.getenv("EMAIL")
+                    PASSWORD=os.getenv("PASSWORD")
+                    RECEIVER=os.getenv("RECEIVER")
                     stack_trace=traceback.format_exc()
-                    EMAIL=""
-                    PASSWORD=""
-                    RECEIVER=""
+                    # EMAIL=""
+                    # PASSWORD=""
+                    # RECEIVER=""
                     with SMTP_SSL('smtp.gmail.com',465) as smtp:
                         msg=EmailMessage()
                         msg['Subject']="Covid19 App"
@@ -128,15 +128,15 @@ def start_cron():
 
         #add yesterdays data to previous data
         new_previous_data=pd.concat([previous_data,current_data],axis=0,ignore_index=True)
-        new_previous_data.to_csv("previous_data_trial.csv",index=False)
+        new_previous_data.to_csv("previous_data.csv",index=False)
 
         #push combined data to storage
-        # is_successful=False
-        # while is_successful==False:
-        #     try:
-        #         is_successful=upload_file("previous_data.csv",s3_bucket_name)
-        #     except:
-        #         time.sleep(18)
+        is_successful=False
+        while is_successful==False:
+            try:
+                is_successful=upload_file("previous_data.csv",s3_bucket_name)
+            except:
+                time.sleep(18)
         
         print(new_previous_data.tail(50))
         print("Done.........................................................")

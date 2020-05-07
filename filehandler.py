@@ -21,11 +21,11 @@ def upload_file(file_name, bucket_name, object_name=None):
         object_name = file_name
 
     #load access keys
-    #access_key=os.getenv("AWSAccessKeyId")
-    #secret_key=os.getenv("AWSSecretKey")
-    keys=json.load(open("rootkey.json","r"))
-    secret_key=keys["AWSSecretKey"]
-    access_key=keys["AWSAccessKeyId"]
+    access_key=os.getenv("AWSAccessKeyId")
+    secret_key=os.getenv("AWSSecretKey")
+    # keys=json.load(open("rootkey.json","r"))
+    # secret_key=keys["AWSSecretKey"]
+    # access_key=keys["AWSAccessKeyId"]
 
     #create s3 client
     s3_client = boto3.client('s3',aws_access_key_id=access_key,aws_secret_access_key=secret_key)
@@ -40,11 +40,11 @@ def upload_file(file_name, bucket_name, object_name=None):
 
 def download_file(bucket_name, object_name, file_name):
     #load access keys
-    # access_key=os.getenv("AWSAccessKeyId")
-    # secret_key=os.getenv("AWSSecretKey")
-    keys=json.load(open("rootkey.json","r"))
-    secret_key=keys["AWSSecretKey"]
-    access_key=keys["AWSAccessKeyId"]
+    access_key=os.getenv("AWSAccessKeyId")
+    secret_key=os.getenv("AWSSecretKey")
+    # keys=json.load(open("rootkey.json","r"))
+    # secret_key=keys["AWSSecretKey"]
+    # access_key=keys["AWSAccessKeyId"]
     
     
     #create s3 client
@@ -95,6 +95,10 @@ def get_todays_data(current_data,grouped_previous_data):
             
             #current data for particular field is greater than previous data
             slicer=current_data["states"]
-            current_data[field]=int(current_data[field])-int(grouped_previous_data.loc[slicer][field])
+            todays_data=int(current_data[field])-int(grouped_previous_data.loc[slicer][field])
+            if todays_data>0:
+                current_data[field]=todays_data
+            else:
+                current_data[field]=-1*todays_data
     return current_data
 
